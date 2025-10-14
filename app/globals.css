@@ -122,4 +122,19 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Ensure all elements respect viewport width on mobile */
+  html {
+    overflow-x: hidden;
+  }
+
+  body {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
+  /* Prevent grid and flex items from overflowing */
+  * {
+    min-width: 0;
+  }
 }

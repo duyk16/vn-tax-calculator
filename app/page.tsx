@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -12,7 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts"
-import { Calculator, TrendingUp, Info, Wallet } from "lucide-react"
+import { Calculator, TrendingUp, Info, Wallet, Users } from "lucide-react"
 
 const OLD_TAX_BRACKETS = [
   { limit: 5000000, rate: 0.05, label: "Bậc 1" },
@@ -76,7 +76,7 @@ function getCurrentBracket(taxableIncome: number, brackets: typeof OLD_TAX_BRACK
 }
 
 export default function TaxCalculator() {
-  const [grossIncome, setGrossIncome] = useState<string>("20000000")
+  const [grossIncome, setGrossIncome] = useState<string>("40000000")
   const [numDependents, setNumDependents] = useState<string>("2")
   const [region, setRegion] = useState<string>("region1")
   const [insuranceMode, setInsuranceMode] = useState<"auto" | "custom">("auto")
@@ -162,6 +162,10 @@ export default function TaxCalculator() {
     })
   }
 
+  useEffect(() => {
+    handleCalculate()
+  }, [])
+
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
@@ -184,15 +188,15 @@ export default function TaxCalculator() {
 
   const oldPieData = results
     ? [
-        { name: "Thuế TNCN", value: results.oldTax },
-        { name: "Thu nhập còn lại", value: results.oldDisposable },
+        { name: "Thuế", value: results.oldTax },
+        { name: "Thu nhập", value: results.oldDisposable },
       ]
     : []
 
   const newPieData = results
     ? [
-        { name: "Thuế TNCN", value: results.newTax },
-        { name: "Thu nhập còn lại", value: results.newDisposable },
+        { name: "Thuế", value: results.newTax },
+        { name: "Thu nhập", value: results.newDisposable },
       ]
     : []
 
@@ -267,7 +271,7 @@ export default function TaxCalculator() {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        <div className="grid gap-6 lg:grid-cols-[350px_1fr]">
+        <div className="grid gap-6 grid-cols-1 lg:grid-cols-[350px_1fr]">
           {/* Left Column - Input Form */}
           <div className="space-y-6">
             <Card>
@@ -283,7 +287,7 @@ export default function TaxCalculator() {
                     <Input
                       id="grossIncome"
                       type="text"
-                      placeholder="20,000,000"
+                      placeholder="40,000,000"
                       value={formatNumber(grossIncome)}
                       onChange={(e) => handleNumberInput(e.target.value, setGrossIncome)}
                       className="pl-10 pr-16"
@@ -294,13 +298,17 @@ export default function TaxCalculator() {
 
                 <div className="space-y-2">
                   <Label htmlFor="numDependents">Số người phụ thuộc</Label>
-                  <Input
-                    id="numDependents"
-                    type="number"
-                    placeholder="2"
-                    value={numDependents}
-                    onChange={(e) => setNumDependents(e.target.value)}
-                  />
+                  <div className="relative">
+                    <Users className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="numDependents"
+                      type="number"
+                      placeholder="2"
+                      value={numDependents}
+                      onChange={(e) => setNumDependents(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-2">
@@ -390,12 +398,18 @@ export default function TaxCalculator() {
                 <div>
                   <p className="font-semibold mb-1">Giảm trừ Cũ (7 bậc):</p>
                   <p>Bản thân: {formatCurrency(OLD_PERSONAL_DEDUCTION)}</p>
-                  <p>Người phụ thuộc: {formatCurrency(OLD_DEPENDENT_DEDUCTION)}/người</p>
+                  <p>
+                    Người phụ thuộc: {formatCurrency(OLD_DEPENDENT_DEDUCTION)}
+                    /người
+                  </p>
                 </div>
                 <div className="pt-2 border-t">
                   <p className="font-semibold mb-1">Giảm trừ Mới (5 bậc):</p>
                   <p>Bản thân: {formatCurrency(NEW_PERSONAL_DEDUCTION)}</p>
-                  <p>Người phụ thuộc: {formatCurrency(NEW_DEPENDENT_DEDUCTION)}/người</p>
+                  <p>
+                    Người phụ thuộc: {formatCurrency(NEW_DEPENDENT_DEDUCTION)}
+                    /người
+                  </p>
                 </div>
               </AlertDescription>
             </Alert>
@@ -410,7 +424,7 @@ export default function TaxCalculator() {
                     <div className="flex items-center justify-between flex-wrap gap-3">
                       <div className="flex items-center gap-2">
                         <TrendingUp className="h-5 w-5 text-primary" />
-                        <CardTitle>Phân tích Tác động Chính sách (AI Insight)</CardTitle>
+                        <CardTitle>Phân tích Tác động Chính sách</CardTitle>
                       </div>
                       <Badge variant="secondary" className="text-sm font-semibold">
                         Bậc thuế mới: {results.newBracket}
@@ -418,59 +432,100 @@ export default function TaxCalculator() {
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-6">
-                    <div className="grid gap-4 sm:grid-cols-2">
-                      <div className="rounded-lg border border-green-500/30 bg-green-50 dark:bg-green-950/20 p-4">
-                        <p className="text-sm text-muted-foreground">Tiền thuế giảm được</p>
-                        <p className="text-3xl font-bold text-green-600 dark:text-green-500 mt-2">
-                          {formatCurrency(results.taxReduction)}
-                        </p>
+                    <div className="grid gap-4 sm:grid-cols-2 pt-4 w-full max-w-full overflow-hidden">
+                      <div className="space-y-2 w-full max-w-full">
+                        <h4 className="text-xs font-semibold text-center text-muted-foreground">Cũ (7 bậc)</h4>
+                        <div className="w-full max-w-full overflow-hidden">
+                          <ResponsiveContainer width="100%" height={180}>
+                            <PieChart>
+                              <Pie
+                                data={oldPieData}
+                                label={({ name, percent }) => `${(percent * 100).toFixed(1)}%`}
+                                dataKey="value"
+                              >
+                                {oldPieData.map((entry, index) => (
+                                  <Cell key={`cell-${index}`} fill={OLD_PIE_COLORS[index % OLD_PIE_COLORS.length]} />
+                                ))}
+                              </Pie>
+                              <Tooltip formatter={(value: number) => formatCurrency(value)} />
+                            </PieChart>
+                          </ResponsiveContainer>
+                        </div>
                       </div>
-                      <div className="rounded-lg border border-green-500/30 bg-green-50 dark:bg-green-950/20 p-4">
-                        <p className="text-sm text-muted-foreground">Thu nhập Khả dụng tăng thêm</p>
-                        <p className="text-3xl font-bold text-green-600 dark:text-green-500 mt-2">
-                          {formatCurrency(results.disposableIncrease)}
-                        </p>
+
+                      <div className="space-y-2 w-full max-w-full">
+                        <h4 className="text-xs font-semibold text-center text-muted-foreground">Mới (5 bậc)</h4>
+                        <div className="w-full max-w-full overflow-hidden">
+                          <ResponsiveContainer width="100%" height={180}>
+                            <PieChart>
+                              <Pie
+                                data={newPieData}
+                                label={({ name, percent }) => `${(percent * 100).toFixed(1)}%`}
+                                dataKey="value"
+                              >
+                                {newPieData.map((entry, index) => (
+                                  <Cell key={`cell-${index}`} fill={NEW_PIE_COLORS[index % NEW_PIE_COLORS.length]} />
+                                ))}
+                              </Pie>
+                              <Tooltip formatter={(value: number) => formatCurrency(value)} />
+                            </PieChart>
+                          </ResponsiveContainer>
+                        </div>
                       </div>
                     </div>
+                    <div className="grid gap-6 grid-cols-1 lg:grid-cols-3 w-full max-w-full">
+                      {/* Left side (2/3): Phân tích chi tiết */}
+                      <div className="lg:col-span-2 space-y-4 w-full max-w-full">
+                        <div className="space-y-3 text-sm leading-relaxed">
+                          <p className="font-semibold text-foreground">Phân tích chi tiết:</p>
+                          <ul className="space-y-2 text-muted-foreground">
+                            <li className="flex gap-2">
+                              <span className="text-primary">•</span>
+                              <span>
+                                Với biểu thuế 5 bậc mới, bạn tiết kiệm được{" "}
+                                <span className="font-semibold text-green-600 dark:text-green-500">
+                                  {formatCurrency(results.taxReduction)}
+                                </span>{" "}
+                                mỗi tháng so với biểu thuế 7 bậc cũ.
+                              </span>
+                            </li>
+                            <li className="flex gap-2">
+                              <span className="text-primary">•</span>
+                              <span>
+                                Thu nhập khả dụng của bạn tăng{" "}
+                                <span className="font-semibold text-green-600 dark:text-green-500">
+                                  {((results.disposableIncrease / results.oldDisposable) * 100).toFixed(2)}%
+                                </span>
+                                , giúp cải thiện chất lượng cuộc sống.
+                              </span>
+                            </li>
+                            <li className="flex gap-2">
+                              <span className="text-primary">•</span>
+                              <span>
+                                Mức giảm trừ gia cảnh tăng từ {formatCurrency(OLD_PERSONAL_DEDUCTION)} lên{" "}
+                                {formatCurrency(NEW_PERSONAL_DEDUCTION)}, giúp giảm thu nhập chịu thuế.
+                              </span>
+                            </li>
+                            <li className="flex gap-2">
+                              <span className="text-primary">•</span>
+                              <span>
+                                Bạn đang ở <span className="font-semibold text-foreground">{results.newBracket}</span>{" "}
+                                trong biểu thuế mới, với thuế suất tối ưu hơn so với biểu thuế cũ.
+                              </span>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
 
-                    <div className="space-y-3 text-sm leading-relaxed">
-                      <p className="font-semibold text-foreground">Phân tích chi tiết:</p>
-                      <ul className="space-y-2 text-muted-foreground">
-                        <li className="flex gap-2">
-                          <span className="text-primary">•</span>
-                          <span>
-                            Với biểu thuế 5 bậc mới, bạn tiết kiệm được{" "}
-                            <span className="font-semibold text-green-600 dark:text-green-500">
-                              {formatCurrency(results.taxReduction)}
-                            </span>{" "}
-                            mỗi tháng so với biểu thuế 7 bậc cũ.
-                          </span>
-                        </li>
-                        <li className="flex gap-2">
-                          <span className="text-primary">•</span>
-                          <span>
-                            Thu nhập khả dụng của bạn tăng{" "}
-                            <span className="font-semibold text-green-600 dark:text-green-500">
-                              {((results.disposableIncrease / results.oldDisposable) * 100).toFixed(2)}%
-                            </span>
-                            , giúp cải thiện chất lượng cuộc sống.
-                          </span>
-                        </li>
-                        <li className="flex gap-2">
-                          <span className="text-primary">•</span>
-                          <span>
-                            Mức giảm trừ gia cảnh tăng từ {formatCurrency(OLD_PERSONAL_DEDUCTION)} lên{" "}
-                            {formatCurrency(NEW_PERSONAL_DEDUCTION)}, giúp giảm thu nhập chịu thuế.
-                          </span>
-                        </li>
-                        <li className="flex gap-2">
-                          <span className="text-primary">•</span>
-                          <span>
-                            Bạn đang ở <span className="font-semibold text-foreground">{results.newBracket}</span> trong
-                            biểu thuế mới, với thuế suất tối ưu hơn so với biểu thuế cũ.
-                          </span>
-                        </li>
-                      </ul>
+                      {/* Right side (1/3): Tiền thuế thay đổi */}
+                      <div className="lg:col-span-1">
+                        <div className="rounded-lg border border-green-500/30 bg-green-50 dark:bg-green-950/20 p-6 h-full flex flex-col justify-center">
+                          <p className="text-sm text-muted-foreground mb-2">Tiền thuế thay đổi</p>
+                          <p className="text-2xl xl:text-3xl font-bold text-green-600 dark:text-green-500">
+                            {formatCurrency(results.taxReduction)}
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -485,10 +540,9 @@ export default function TaxCalculator() {
                   </CardHeader>
                   <CardContent>
                     <Tabs defaultValue="table" className="w-full">
-                      <TabsList className="grid w-full grid-cols-3">
+                      <TabsList className="grid w-full grid-cols-2">
                         <TabsTrigger value="table">Bảng Dữ liệu</TabsTrigger>
                         <TabsTrigger value="structure">Cấu trúc Thuế</TabsTrigger>
-                        <TabsTrigger value="rate">Tỷ lệ Thuế</TabsTrigger>
                       </TabsList>
 
                       <TabsContent value="table" className="mt-6 space-y-6">
@@ -676,68 +730,6 @@ export default function TaxCalculator() {
                             thuế của bạn. Hàng được tô sáng là bậc thuế hiện tại của bạn.
                           </AlertDescription>
                         </Alert>
-                      </TabsContent>
-
-                      <TabsContent value="rate" className="mt-6">
-                        <div className="grid gap-6 md:grid-cols-2">
-                          <div className="space-y-4">
-                            <h3 className="text-sm font-semibold text-center">Phương án Cũ (7 bậc)</h3>
-                            <ResponsiveContainer width="100%" height={250}>
-                              <PieChart>
-                                <Pie
-                                  data={oldPieData}
-                                  cx="50%"
-                                  cy="50%"
-                                  labelLine={false}
-                                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(1)}%`}
-                                  outerRadius={80}
-                                  fill="#8884d8"
-                                  dataKey="value"
-                                >
-                                  {oldPieData.map((entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={OLD_PIE_COLORS[index % OLD_PIE_COLORS.length]} />
-                                  ))}
-                                </Pie>
-                                <Tooltip formatter={(value: number) => formatCurrency(value)} />
-                              </PieChart>
-                            </ResponsiveContainer>
-                            <div className="text-center space-y-1">
-                              <p className="text-sm text-muted-foreground">Tỷ lệ thuế</p>
-                              <p className="text-2xl font-bold">
-                                {((results.oldTax / results.gross) * 100).toFixed(2)}%
-                              </p>
-                            </div>
-                          </div>
-
-                          <div className="space-y-4">
-                            <h3 className="text-sm font-semibold text-center">Phương án Mới (5 bậc)</h3>
-                            <ResponsiveContainer width="100%" height={250}>
-                              <PieChart>
-                                <Pie
-                                  data={newPieData}
-                                  cx="50%"
-                                  cy="50%"
-                                  labelLine={false}
-                                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(1)}%`}
-                                  outerRadius={80}
-                                  fill="#8884d8"
-                                  dataKey="value"
-                                >
-                                  {newPieData.map((entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={NEW_PIE_COLORS[index % NEW_PIE_COLORS.length]} />
-                                  ))}
-                                </Pie>
-                                <Tooltip formatter={(value: number) => formatCurrency(value)} />
-                              </PieChart>
-                            </ResponsiveContainer>
-                            <div className="text-center space-y-1">
-                              <p className="text-sm text-muted-foreground">Tỷ lệ thuế</p>
-                              <p className="text-2xl font-bold text-primary">
-                                {((results.newTax / results.gross) * 100).toFixed(2)}%
-                              </p>
-                            </div>
-                          </div>
-                        </div>
                       </TabsContent>
                     </Tabs>
                   </CardContent>
