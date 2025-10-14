@@ -263,7 +263,7 @@ export default function TaxCalculator() {
             <Calculator className="h-8 w-8 text-primary" />
             <div>
               <h1 className="text-2xl font-bold text-foreground">Công cụ Tính Thuế TNCN</h1>
-              <p className="text-sm text-muted-foreground">So sánh biểu thuế 7 bậc và 5 bậc</p>
+              <p className="text-sm text-muted-foreground">So sánh biểu thuế 7 bậc và 5 bậc (từ 01/01/2026)</p>
             </div>
           </div>
         </div>
