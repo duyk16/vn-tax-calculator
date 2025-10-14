@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Analytics } from '@vercel/analytics/next'
 import { Inter } from 'next/font/google'
 import Script from 'next/script'
@@ -9,11 +9,11 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://tinhthue.vn'
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: 'Máy tính Thuế TNCN 2025 – Miễn phí',
+    default: 'Tính Thuế TNCN mới 2026 - Miễn phí',
     template: '%s | Máy tính Thuế TNCN',
   },
   description:
-    'Công cụ tính thuế thu nhập cá nhân chính xác, cập nhật 2025. Hỗ trợ giảm trừ, BHXH/BHYT/BHTN, net↔gross, biểu thuế lũy tiến.',
+    'Công cụ tính thuế thu nhập cá nhân chính xác, cập nhật 2026. Hỗ trợ giảm trừ, BHXH/BHYT/BHTN, net↔gross, biểu thuế lũy tiến.',
   keywords: [
     'máy tính thuế TNCN',
     'tính thuế thu nhập cá nhân',
@@ -32,9 +32,9 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: 'Máy tính Thuế TNCN 2025 – Miễn phí',
+    title: 'Tính Thuế TNCN mới 2026 - Miễn phí',
     description:
-      'Công cụ tính thuế thu nhập cá nhân chính xác, cập nhật 2025. Hỗ trợ giảm trừ, BHXH/BHYT/BHTN, net↔gross, biểu thuế lũy tiến.',
+      'Công cụ tính thuế thu nhập cá nhân chính xác, cập nhật 2026. Hỗ trợ giảm trừ, BHXH/BHYT/BHTN, net↔gross, biểu thuế lũy tiến.',
     url: '/',
     siteName: 'Máy tính Thuế TNCN',
     locale: 'vi_VN',
@@ -42,9 +42,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary',
-    title: 'Máy tính Thuế TNCN 2025 – Miễn phí',
+    title: 'Tính Thuế TNCN mới 2026 - Miễn phí',
     description:
-      'Công cụ tính thuế thu nhập cá nhân chính xác, cập nhật 2025. Hỗ trợ giảm trừ, BHXH/BHYT/BHTN, net↔gross, biểu thuế lũy tiến.',
+      'Công cụ tính thuế thu nhập cá nhân chính xác, cập nhật 2026. Hỗ trợ giảm trừ, BHXH/BHYT/BHTN, net↔gross, biểu thuế lũy tiến.',
   },
   robots: {
     index: true,
@@ -57,11 +57,6 @@ export const metadata: Metadata = {
       'max-video-preview': -1,
     },
   },
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    viewportFit: 'cover',
-  },
   verification: {
     google: process.env.NEXT_PUBLIC_GSC_VERIFICATION,
   },
@@ -73,7 +68,22 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
+  icons: {
+    icon: [
+      { url: '/logo.ico' },
+      { url: '/logo.png', type: 'image/png' },
+    ],
+    shortcut: ['/logo.ico'],
+    apple: [{ url: '/logo.png', type: 'image/png' }],
+  },
 }
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+}
+
 
 const inter = Inter({
   weight: '500',
