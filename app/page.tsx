@@ -440,7 +440,7 @@ export default function TaxCalculator() {
                             <PieChart>
                               <Pie
                                 data={oldPieData}
-                                label={({ name, percent }) => `${(percent * 100).toFixed(1)}%`}
+                                label={({ name, percent }: any) => `${(percent * 100).toFixed(1)}%`}
                                 dataKey="value"
                               >
                                 {oldPieData.map((entry, index) => (
@@ -460,7 +460,7 @@ export default function TaxCalculator() {
                             <PieChart>
                               <Pie
                                 data={newPieData}
-                                label={({ name, percent }) => `${(percent * 100).toFixed(1)}%`}
+                                label={({ name, percent }: any) => `${(percent * 100).toFixed(1)}%`}
                                 dataKey="value"
                               >
                                 {newPieData.map((entry, index) => (
