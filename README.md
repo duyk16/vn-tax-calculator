@@ -5,6 +5,10 @@ Máy tính thuế TNCN là công cụ miễn phí giúp bạn ước tính thu�
 
 - Website: https://tinhthue.vn
 
+## Xem trước
+
+![Tính Thuế TNCN Preview](./public/tinhthue-preview.png)
+
 ## Đóng góp cho dự án
 Rất hoan nghênh mọi đóng góp!
 

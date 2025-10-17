@@ -5,6 +5,7 @@ import type { Metadata, Viewport } from "next"
 import { Inter } from "next/font/google"
 import Script from "next/script"
 
+import { Footer } from "@/components/footer"
 import "./globals.css"
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://tinhthue.vn"
@@ -17,7 +18,25 @@ export const metadata: Metadata = {
   },
   description:
     "Công cụ tính thuế thu nhập cá nhân chính xác, cập nhật 2026. Hỗ trợ giảm trừ, BHXH/BHYT/BHTN, net↔gross, biểu thuế lũy tiến.",
-  keywords: ["máy tính thuế TNCN", "tính thuế thu nhập cá nhân", "thuế Việt Nam", "thuế TNCN", "gross to net", "VND"],
+  keywords: [
+    "máy tính thuế TNCN",
+    "tính thuế thu nhập cá nhân",
+    "thuế Việt Nam",
+    "thuế TNCN",
+    "gross to net",
+    "VND",
+    "tính lương",
+    "tính lương ròng",
+    "tính lương net",
+    "tính lương gross",
+    "tính lương sau thuế",
+    "tính lương trước thuế",
+    "tool tính lương",
+    "công cụ tính lương",
+    "tính lương BHXH",
+    "tính lương BHYT",
+    "tính lương BHTN",
+  ],
   applicationName: "Máy tính Thuế TNCN",
   generator: "du",
   alternates: {
@@ -35,12 +54,21 @@ export const metadata: Metadata = {
     siteName: "Máy tính Thuế TNCN",
     locale: "vi_VN",
     type: "website",
+    images: [
+      {
+        url: "/tinhthue-preview.png",
+        width: 1200,
+        height: 630,
+        alt: "Tính Thuế TNCN Preview",
+      },
+    ],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "Tính Thuế TNCN mới 2026 - Miễn phí",
     description:
       "Công cụ tính thuế thu nhập cá nhân chính xác, cập nhật 2026. Hỗ trợ giảm trừ, BHXH/BHYT/BHTN, net↔gross, biểu thuế lũy tiến.",
+    images: ["/tinhthue-preview.png"],
   },
   robots: {
     index: true,
@@ -65,8 +93,11 @@ export const metadata: Metadata = {
     telephone: false,
   },
   icons: {
-    icon: [{ url: "/logo.ico" }, { url: "/logo.png", type: "image/png" }],
-    shortcut: ["/logo.ico"],
+    icon: [
+      { url: "/favicon.ico", type: "image/x-icon" },
+      { url: "/logo.png", type: "image/png" },
+    ],
+    shortcut: ["/favicon.ico"],
     apple: [{ url: "/logo.png", type: "image/png" }],
   },
 }
@@ -137,7 +168,10 @@ export default function RootLayout({
           strategy="afterInteractive"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
         />
-        {children}
+        <div className="flex flex-col min-h-screen">
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </div>
         <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID ?? ""} />
         <Analytics />
         <SpeedInsights />
