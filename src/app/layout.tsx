@@ -5,7 +5,6 @@ import type { Metadata, Viewport } from "next"
 import { Inter } from "next/font/google"
 import Script from "next/script"
 
-import { Footer } from "@//components/footer"
 import "./globals.css"
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://tinhthue.vn"
@@ -147,6 +146,55 @@ export default function RootLayout({
     ],
   }
 
+  const faqLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "Thuế TNCN mới 2026 thay đổi như thế nào?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Luật thuế mới 2026 giảm từ 7 bậc xuống 5 bậc, tăng mức giảm trừ gia cảnh từ 11 triệu lên 15.5 triệu, và giảm trừ người phụ thuộc từ 4.4 triệu lên 6.2 triệu.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Mức giảm trừ gia cảnh năm 2026 là bao nhiêu?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Mức giảm trừ gia cảnh bản thân là 15.5 triệu đồng/tháng, và mức giảm trừ cho mỗi người phụ thuộc là 6.2 triệu đồng/tháng.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Cách tính thuế TNCN theo biểu thuế lũy tiến?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Thu nhập chịu thuế được tính bằng lương gross trừ đi bảo hiểm và các khoản giảm trừ. Phần thu nhập chịu thuế sẽ được áp dụng thuế suất lũy tiến từ 5% đến 35% tùy theo mức thu nhập.",
+        },
+      },
+    ],
+  }
+
+  const webAppLd = {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "Máy tính Thuế TNCN",
+    description: "Công cụ tính thuế thu nhập cá nhân chính xác, cập nhật 2026",
+    url: SITE_URL,
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "Any",
+    browserRequirements: "Requires JavaScript",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "VND",
+    },
+    inLanguage: "vi-VN",
+  }
+
+
   return (
     <html lang="vi-VN">
       <body className={`${inter.className}`}>
@@ -167,6 +215,18 @@ export default function RootLayout({
           type="application/ld+json"
           strategy="afterInteractive"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+        />
+        <Script
+          id="ld-faq"
+          type="application/ld+json"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }}
+        />
+        <Script
+          id="ld-webapp"
+          type="application/ld+json"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(webAppLd) }}
         />
         <div className="flex flex-col min-h-screen">
           <main className="flex-1">{children}</main>
