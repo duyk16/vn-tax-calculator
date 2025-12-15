@@ -1,15 +1,17 @@
 # Máy tính Thuế TNCN
 
 ## Giới thiệu
+
 Máy tính thuế TNCN là công cụ miễn phí giúp bạn ước tính thuế thu nhập cá nhân chính xác và nhanh chóng (cập nhật 2026), hỗ trợ các trường hợp phổ biến như giảm trừ, BHXH/BHYT/BHTN và chuyển đổi lương gross ↔ net.
 
 - Website: https://tinhthue.vn
 
 ## Xem trước
 
-![Tính Thuế TNCN Preview](./public/tinhthue-preview.png)
+![Tính Thuế TNCN Preview](./public/tinhthue-preview-v0.1.0.png)
 
 ## Đóng góp cho dự án
+
 Rất hoan nghênh mọi đóng góp!
 
 - Góp ý/tính năng: hãy mở một issue mô tả rõ vấn đề hoặc đề xuất.
@@ -23,5 +25,5 @@ Rất hoan nghênh mọi đóng góp!
 Cảm ơn bạn đã đóng góp để công cụ ngày càng tốt hơn!
 
 ## Bản quyền
-Phần mềm được phát hành theo giấy phép MIT. Xem chi tiết trong tệp `LICENSE`.
 
+Phần mềm được phát hành theo giấy phép MIT. Xem chi tiết trong tệp `LICENSE`.

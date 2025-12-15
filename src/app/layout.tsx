@@ -55,7 +55,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/tinhthue-preview.png",
+        url: "/tinhthue-preview-v0.1.0.png",
         width: 1200,
         height: 630,
         alt: "Tính Thuế TNCN Preview",
@@ -67,7 +67,7 @@ export const metadata: Metadata = {
     title: "Tính Thuế TNCN mới 2026 - Miễn phí",
     description:
       "Công cụ tính thuế thu nhập cá nhân chính xác, cập nhật 2026. Hỗ trợ giảm trừ, BHXH/BHYT/BHTN, net↔gross, biểu thuế lũy tiến.",
-    images: ["/tinhthue-preview.png"],
+    images: ["/tinhthue-preview-v0.1.0.png"],
   },
   robots: {
     index: true,
