@@ -9,6 +9,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
+import { TaxBreakdownModal } from './TaxBreakdownModal';
 
 interface ResultSummaryProps {
   result: TaxResult;
@@ -78,6 +79,13 @@ export function ResultSummary({ result, label, isNew = false, multiplier = 1 }: 
                   <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Thuế TNCN</p>
                   <DetailRow label="Thu nhập chịu thuế" value={result.taxableIncome * multiplier} />
                   <DetailRow label={`Bậc thuế: ${result.bracket}`} value={result.taxAmount * multiplier} isNegative isBold />
+                  <TaxBreakdownModal
+                    taxableIncome={result.taxableIncome}
+                    taxAmount={result.taxAmount}
+                    bracketBreakdown={result.bracketBreakdown}
+                    isNewLaw={isNew}
+                    multiplier={multiplier}
+                  />
                 </div>
               </div>
             </AccordionContent>

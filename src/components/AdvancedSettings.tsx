@@ -158,8 +158,8 @@ export function AdvancedSettings({
                   id={r.value === 1 ? 'region' : undefined}
                   onClick={() => onRegionChange(r.value)}
                   className={`p-2.5 rounded-lg text-left transition-all duration-200 ${region === r.value
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-secondary text-secondary-foreground hover:bg-accent'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-secondary text-secondary-foreground hover:bg-accent'
                     }`}
                 >
                   <p className="font-medium text-sm">{r.label}</p>
@@ -182,8 +182,8 @@ export function AdvancedSettings({
                   key={type.value}
                   onClick={() => onInsuranceChange(type.value)}
                   className={`w-full p-2.5 rounded-lg text-left transition-all duration-200 flex items-center justify-between ${insuranceType === type.value
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-secondary text-secondary-foreground hover:bg-accent'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-secondary text-secondary-foreground hover:bg-accent'
                     }`}
                 >
                   <div>
@@ -193,8 +193,8 @@ export function AdvancedSettings({
                     </p>
                   </div>
                   <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${insuranceType === type.value
-                      ? 'border-primary-foreground'
-                      : 'border-muted-foreground/30'
+                    ? 'border-primary-foreground'
+                    : 'border-muted-foreground/30'
                     }`}>
                     {insuranceType === type.value && (
                       <div className="w-2.5 h-2.5 rounded-full bg-primary-foreground" />
@@ -245,8 +245,8 @@ export function AdvancedSettings({
                       key={quickValue}
                       onClick={() => onCustomInsuranceChange(quickValue)}
                       className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all duration-200 ${customInsurance === quickValue
-                          ? 'bg-primary text-primary-foreground'
-                          : 'bg-background text-secondary-foreground hover:bg-accent'
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-background text-secondary-foreground hover:bg-accent'
                         }`}
                     >
                       {quickValue / 1000000} tr

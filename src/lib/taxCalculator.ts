@@ -10,6 +10,17 @@ export interface TaxInput {
   customInsurance?: number
 }
 
+export interface TaxBracketBreakdown {
+  bracket: number // Bracket number (1-7 for old, 1-5 for new)
+  label: string // "Bậc 1", "Bậc 2", etc.
+  rate: number // Tax rate (0.05, 0.10, etc.)
+  lowerLimit: number // Start of bracket range
+  upperLimit: number // End of bracket range
+  taxableAmount: number // Income taxed in this bracket
+  taxAmount: number // Tax amount for this bracket
+  isHighest: boolean // Whether this is the highest bracket reached
+}
+
 export interface TaxResult {
   grossSalary: number
   socialInsurance: number
@@ -23,6 +34,7 @@ export interface TaxResult {
   taxAmount: number
   netSalary: number
   bracket: string
+  bracketBreakdown: TaxBracketBreakdown[]
 }
 
 export interface ComparisonResult {
@@ -117,20 +129,36 @@ function calculateInsurance(
 function calculateProgressiveTax(
   taxableIncome: number,
   brackets: typeof OLD_TAX_BRACKETS
-): { tax: number; bracket: string } {
+): { tax: number; bracket: string; breakdown: TaxBracketBreakdown[] } {
   if (taxableIncome <= 0) {
-    return { tax: 0, bracket: "Không chịu thuế" }
+    return { tax: 0, bracket: "Không chịu thuế", breakdown: [] }
   }
 
   let tax = 0
   let previousLimit = 0
   let currentBracket = brackets[0].label
+  const breakdown: TaxBracketBreakdown[] = []
+  let highestBracketIndex = -1
 
-  for (const bracket of brackets) {
+  for (let i = 0; i < brackets.length; i++) {
+    const bracket = brackets[i]
     if (taxableIncome <= previousLimit) break
 
     const taxableAmount = Math.min(taxableIncome, bracket.limit) - previousLimit
-    tax += taxableAmount * bracket.rate
+    const bracketTax = taxableAmount * bracket.rate
+    tax += bracketTax
+
+    breakdown.push({
+      bracket: i + 1,
+      label: bracket.label,
+      rate: bracket.rate,
+      lowerLimit: previousLimit,
+      upperLimit: bracket.limit === Infinity ? Infinity : bracket.limit,
+      taxableAmount,
+      taxAmount: bracketTax,
+      isHighest: false, // Will be set after loop
+    })
+    highestBracketIndex = breakdown.length - 1
 
     if (taxableIncome <= bracket.limit) {
       currentBracket = bracket.label
@@ -141,7 +169,12 @@ function calculateProgressiveTax(
     currentBracket = bracket.label
   }
 
-  return { tax, bracket: currentBracket }
+  // Mark the highest bracket
+  if (highestBracketIndex >= 0) {
+    breakdown[highestBracketIndex].isHighest = true
+  }
+
+  return { tax, bracket: currentBracket, breakdown }
 }
 
 function calculateTax(input: TaxInput, isNewLaw: boolean): TaxResult {
@@ -155,7 +188,7 @@ function calculateTax(input: TaxInput, isNewLaw: boolean): TaxResult {
 
   const incomeAfterInsurance = input.grossSalary - insurance.total
   const taxableIncome = Math.max(0, incomeAfterInsurance - totalDeduction)
-  const { tax: taxAmount, bracket } = calculateProgressiveTax(taxableIncome, brackets)
+  const { tax: taxAmount, bracket, breakdown: bracketBreakdown } = calculateProgressiveTax(taxableIncome, brackets)
   const netSalary = input.grossSalary - insurance.total - taxAmount
 
   return {
@@ -171,6 +204,7 @@ function calculateTax(input: TaxInput, isNewLaw: boolean): TaxResult {
     taxAmount,
     netSalary,
     bracket,
+    bracketBreakdown,
   }
 }
 
