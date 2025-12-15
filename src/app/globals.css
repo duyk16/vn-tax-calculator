@@ -10,19 +10,19 @@
   --card-foreground: oklch(0.15 0.02 265);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.15 0.02 265);
-  --primary: oklch(0.45 0.15 265);
+  --primary: oklch(0.55 0.22 255);
   --primary-foreground: oklch(0.98 0 0);
   --secondary: oklch(0.96 0.01 265);
   --secondary-foreground: oklch(0.15 0.02 265);
   --muted: oklch(0.96 0.01 265);
   --muted-foreground: oklch(0.5 0.02 265);
-  --accent: oklch(0.65 0.18 265);
+  --accent: oklch(0.6 0.2 255);
   --accent-foreground: oklch(0.98 0 0);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.98 0 0);
   --border: oklch(0.9 0.01 265);
   --input: oklch(0.9 0.01 265);
-  --ring: oklch(0.45 0.15 265);
+  --ring: oklch(0.55 0.22 255);
   --chart-1: oklch(0.65 0.18 265);
   --chart-2: oklch(0.55 0.15 285);
   --chart-3: oklch(0.75 0.12 245);
@@ -37,6 +37,14 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* New colors for tax calculator UI */
+  --success: oklch(0.65 0.18 145);
+  --success-foreground: oklch(0.98 0 0);
+  --success-light: oklch(0.95 0.05 145);
+  --chart-old: oklch(0.7 0.03 265);
+  --chart-new: oklch(0.55 0.22 255);
+  --chart-savings: oklch(0.65 0.18 145);
 }
 
 .dark {
@@ -46,13 +54,13 @@
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.145 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.65 0.18 265);
+  --primary: oklch(0.6 0.2 255);
   --primary-foreground: oklch(0.98 0 0);
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);
   --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.65 0.18 265);
+  --accent: oklch(0.6 0.2 255);
   --accent-foreground: oklch(0.98 0 0);
   --destructive: oklch(0.396 0.141 25.723);
   --destructive-foreground: oklch(0.637 0.237 25.331);
@@ -72,6 +80,14 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(0.269 0 0);
   --sidebar-ring: oklch(0.439 0 0);
+
+  /* Dark mode colors for tax calculator UI */
+  --success: oklch(0.7 0.18 145);
+  --success-foreground: oklch(0.98 0 0);
+  --success-light: oklch(0.25 0.05 145);
+  --chart-old: oklch(0.45 0.03 265);
+  --chart-new: oklch(0.65 0.18 265);
+  --chart-savings: oklch(0.7 0.18 145);
 }
 
 @theme inline {
@@ -113,6 +129,14 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  /* New theme colors */
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-success-light: var(--success-light);
+  --color-chart-old: var(--chart-old);
+  --color-chart-new: var(--chart-new);
+  --color-chart-savings: var(--chart-savings);
 }
 
 @layer base {
@@ -136,5 +160,68 @@
   /* Prevent grid and flex items from overflowing */
   * {
     min-width: 0;
+  }
+}
+
+/* Animation utilities */
+@keyframes count-up {
+  0% {
+    opacity: 0.5;
+    transform: translateY(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-slide-up {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bar-grow {
+  0% {
+    transform: scaleX(0);
+  }
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+@layer utilities {
+  .animate-count {
+    animation: count-up 0.6s ease-out;
+  }
+
+  .animate-fade-slide-up {
+    animation: fade-slide-up 0.4s ease-out;
+  }
+
+  .animate-bar-grow {
+    animation: bar-grow 0.6s ease-out;
+    transform-origin: left;
+  }
+
+  .card-shadow {
+    box-shadow: 0 1px 3px 0 oklch(0.15 0.02 265 / 0.04), 0 4px 12px 0 oklch(0.15 0.02 265 / 0.04);
+  }
+
+  .card-shadow-lg {
+    box-shadow: 0 4px 6px -1px oklch(0.15 0.02 265 / 0.05), 0 10px 20px -2px oklch(0.15 0.02 265 / 0.08);
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/80;
+  }
+
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
   }
 }
