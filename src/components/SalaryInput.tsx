@@ -13,14 +13,21 @@ const QUICK_VALUES = [15000000, 30000000, 50000000, 80000000];
 const STEP = 500000;
 
 export function SalaryInput({ value, onChange }: SalaryInputProps) {
-  const [displayValue, setDisplayValue] = useState(formatCurrency(value));
+  const [displayValue, setDisplayValue] = useState(value.toString());
   const [isFocused, setIsFocused] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  // Mark as mounted on client side
+  useEffect(() => {
+    setIsMounted(true);
+    setDisplayValue(formatCurrency(value));
+  }, []);
 
   useEffect(() => {
-    if (!isFocused) {
+    if (!isFocused && isMounted) {
       setDisplayValue(formatCurrency(value));
     }
-  }, [value, isFocused]);
+  }, [value, isFocused, isMounted]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value.replace(/[^\d]/g, '');
@@ -74,6 +81,7 @@ export function SalaryInput({ value, onChange }: SalaryInputProps) {
             onBlur={handleBlur}
             placeholder="0"
             className="w-full text-center text-3xl font-bold bg-transparent border-none outline-none text-foreground placeholder:text-muted-foreground/30 py-3"
+            suppressHydrationWarning
           />
           <div className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50" />
         </div>
@@ -95,8 +103,8 @@ export function SalaryInput({ value, onChange }: SalaryInputProps) {
             key={quickValue}
             onClick={() => onChange(quickValue)}
             className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${value === quickValue
-                ? 'bg-primary text-primary-foreground'
-                : 'bg-secondary text-secondary-foreground hover:bg-accent'
+              ? 'bg-primary text-primary-foreground'
+              : 'bg-secondary text-secondary-foreground hover:bg-accent'
               }`}
           >
             {quickValue / 1000000} tr
