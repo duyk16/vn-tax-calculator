@@ -9,6 +9,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { formatCurrency, TAX_CONFIG } from '@/lib/taxCalculator';
+import { InfoTooltip } from './InfoTooltip';
 
 interface AdvancedSettingsProps {
   region: 1 | 2 | 3 | 4;
@@ -113,10 +114,10 @@ export function AdvancedSettings({
           </span>
         </AccordionTrigger>
         <AccordionContent className="space-y-4 pt-2">
-          {/* Region Selection */}
           <div className="space-y-2">
-            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide flex items-center gap-1">
               Vùng lương tối thiểu
+              <InfoTooltip content="Vùng lương quyết định mức trần đóng BHTN. Vùng 1-4 từ cao đến thấp theo mức phát triển kinh tế của địa phương." />
             </label>
 
             {/* Search input */}
@@ -171,10 +172,10 @@ export function AdvancedSettings({
             </div>
           </div>
 
-          {/* Insurance Type Selection */}
           <div className="space-y-2">
-            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide flex items-center gap-1">
               Loại bảo hiểm
+              <InfoTooltip content="BHXH (8%), BHYT (1.5%), BHTN (1%) là các khoản bảo hiểm bắt buộc khấu trừ từ lương Gross trước khi tính thuế." />
             </label>
             <div className="space-y-2">
               {INSURANCE_TYPES.map((type) => (

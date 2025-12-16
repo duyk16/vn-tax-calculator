@@ -8,11 +8,18 @@ import { formatCurrency } from '@/lib/taxCalculator';
 
 interface StickyBottomBarProps {
   netSalary: number;
+  grossSalary: number;
+  salaryMode: 'gross' | 'net';
   isYearly?: boolean;
 }
 
-export function StickyBottomBar({ netSalary, isYearly = false }: StickyBottomBarProps) {
-  const animatedNet = useAnimatedNumber(netSalary);
+export function StickyBottomBar({ netSalary, grossSalary, salaryMode, isYearly = false }: StickyBottomBarProps) {
+  // When user inputs NET, show calculated Gross as the result
+  // When user inputs Gross, show calculated NET as the result
+  const displayValue = salaryMode === 'net' ? grossSalary : netSalary;
+  const displayLabel = salaryMode === 'net' ? 'Lương Gross cần có' : 'Lương NET (Luật mới)';
+
+  const animatedValue = useAnimatedNumber(displayValue);
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -37,9 +44,9 @@ export function StickyBottomBar({ netSalary, isYearly = false }: StickyBottomBar
     <div className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-lg border-t border-border z-50">
       <div className="max-w-md mx-auto flex items-center justify-between px-4 py-3 pb-6" style={{ paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom, 1.5rem))' }}>
         <div>
-          <p className="text-xs text-muted-foreground">Lương NET (Luật mới) {isYearly ? '/ năm' : '/ tháng'}</p>
+          <p className="text-xs text-muted-foreground">{displayLabel} {isYearly ? '/ năm' : '/ tháng'}</p>
           <p className="text-lg font-bold text-primary">
-            {formatCurrency(animatedNet)} đ
+            {formatCurrency(animatedValue)} đ
           </p>
         </div>
         <Button

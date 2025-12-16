@@ -10,6 +10,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { TaxBreakdownModal } from './TaxBreakdownModal';
+import { InfoTooltip } from './InfoTooltip';
 
 interface ResultSummaryProps {
   result: TaxResult;
@@ -69,14 +70,20 @@ export function ResultSummary({ result, label, isNew = false, multiplier = 1 }: 
                 </div>
 
                 <div className="space-y-1.5 pb-2 border-b border-border">
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Giảm trừ</p>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide flex items-center gap-1">
+                    Giảm trừ
+                    <InfoTooltip content="Mức miễn thuế cố định cho bản thân (11tr cũ / 15.5tr mới) cộng với mức giảm trừ cho người phụ thuộc." />
+                  </p>
                   <DetailRow label="Giảm trừ bản thân" value={result.personalDeduction * multiplier} />
                   <DetailRow label="Giảm trừ người PT" value={result.dependentDeduction * multiplier} />
                   <DetailRow label="Tổng giảm trừ" value={result.totalDeduction * multiplier} isBold />
                 </div>
 
                 <div className="space-y-1.5">
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Thuế TNCN</p>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide flex items-center gap-1">
+                    Thuế TNCN
+                    <InfoTooltip content="Thuế TNCN tính theo biểu thuế lũy tiến từng phần: thu nhập càng cao, phần vượt bị đánh thuế cao hơn." />
+                  </p>
                   <DetailRow label="Thu nhập chịu thuế" value={result.taxableIncome * multiplier} />
                   <DetailRow label={`Bậc thuế: ${result.bracket}`} value={result.taxAmount * multiplier} isNegative isBold />
                   <TaxBreakdownModal

@@ -3,37 +3,57 @@
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { Header } from './Header';
-import { SalaryInput } from './SalaryInput';
+import { SalaryInput, SalaryMode } from './SalaryInput';
 import { DependentStepper } from './DependentStepper';
 import { AdvancedSettings } from './AdvancedSettings';
 import { ComparisonChart } from './ComparisonChart';
 import { SavingsHighlight } from './SavingsHighlight';
 import { ResultSummary } from './ResultSummary';
 import { StickyBottomBar } from './StickyBottomBar';
-import { calculateComparison, TaxInput } from '@/lib/taxCalculator';
+import { BackToTopButton } from './BackToTopButton';
+import { calculateComparison, calculateGrossFromNet, TaxInput } from '@/lib/taxCalculator';
 
 interface TaxCalculatorProps {
   appVersion?: string;
 }
 
 export function TaxCalculator({ appVersion }: TaxCalculatorProps) {
-  const [input, setInput] = useState<TaxInput>({
-    grossSalary: 30000000,
-    dependents: 2,
-    region: 1,
-    insuranceType: 'official',
-    customInsurance: 5000000,
-  });
+  const [salaryValue, setSalaryValue] = useState(30000000);
+  const [salaryMode, setSalaryMode] = useState<SalaryMode>('gross');
+  const [dependents, setDependents] = useState(2);
+  const [region, setRegion] = useState<1 | 2 | 3 | 4>(1);
+  const [insuranceType, setInsuranceType] = useState<'official' | 'none' | 'custom'>('official');
+  const [customInsurance, setCustomInsurance] = useState(5000000);
 
   const [isYearly, setIsYearly] = useState(false);
+
+  // Calculate the gross salary to use for tax calculation
+  const grossSalary = useMemo(() => {
+    if (salaryMode === 'gross') {
+      return salaryValue;
+    }
+    // NET mode: calculate gross from net
+    return calculateGrossFromNet(
+      salaryValue,
+      dependents,
+      region,
+      insuranceType,
+      customInsurance,
+      true // Use new law for calculation
+    );
+  }, [salaryValue, salaryMode, dependents, region, insuranceType, customInsurance]);
+
+  const input: TaxInput = useMemo(() => ({
+    grossSalary,
+    dependents,
+    region,
+    insuranceType,
+    customInsurance,
+  }), [grossSalary, dependents, region, insuranceType, customInsurance]);
 
   const result = useMemo(() => calculateComparison(input), [input]);
 
   const multiplier = isYearly ? 12 : 1;
-
-  const updateInput = <K extends keyof TaxInput>(key: K, value: TaxInput[K]) => {
-    setInput(prev => ({ ...prev, [key]: value }));
-  };
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -43,30 +63,33 @@ export function TaxCalculator({ appVersion }: TaxCalculatorProps) {
         {/* Input Section */}
         <section className="bg-card rounded-xl p-4 card-shadow-lg">
           <SalaryInput
-            value={input.grossSalary}
-            onChange={(v) => updateInput('grossSalary', v)}
+            value={salaryValue}
+            onChange={setSalaryValue}
+            mode={salaryMode}
+            onModeChange={setSalaryMode}
           />
         </section>
 
         {/* Dependent Stepper */}
         <DependentStepper
-          value={input.dependents}
-          onChange={(v) => updateInput('dependents', v)}
+          value={dependents}
+          onChange={setDependents}
         />
 
         {/* Advanced Settings */}
         <div className="bg-card rounded-xl p-3 card-shadow">
           <AdvancedSettings
-            region={input.region}
-            insuranceType={input.insuranceType}
-            customInsurance={input.customInsurance || 3000000}
-            onRegionChange={(v) => updateInput('region', v)}
-            onInsuranceChange={(v) => updateInput('insuranceType', v)}
-            onCustomInsuranceChange={(v) => updateInput('customInsurance', v)}
+            region={region}
+            insuranceType={insuranceType}
+            customInsurance={customInsurance}
+            onRegionChange={setRegion}
+            onInsuranceChange={setInsuranceType}
+            onCustomInsuranceChange={setCustomInsurance}
           />
         </div>
 
         {/* Results Section */}
+
         <section className="space-y-4 animate-fade-slide-up">
           {/* Savings Highlight */}
           <SavingsHighlight
@@ -135,8 +158,11 @@ export function TaxCalculator({ appVersion }: TaxCalculatorProps) {
 
       <StickyBottomBar
         netSalary={result.newLaw.netSalary * multiplier}
+        grossSalary={result.newLaw.grossSalary * multiplier}
+        salaryMode={salaryMode}
         isYearly={isYearly}
       />
+      <BackToTopButton />
     </div>
   );
 }

@@ -236,6 +236,58 @@ export function formatCurrencyShort(amount: number): string {
   return formatCurrency(amount)
 }
 
+/**
+ * Calculate Gross salary from desired NET salary using binary search
+ * This reverses the tax calculation to find the Gross that produces the target NET
+ */
+export function calculateGrossFromNet(
+  targetNet: number,
+  dependents: number,
+  region: 1 | 2 | 3 | 4,
+  insuranceType: "official" | "none" | "custom",
+  customInsurance?: number,
+  isNewLaw: boolean = true
+): number {
+  // Binary search bounds
+  let low = targetNet // Gross must be at least NET
+  let high = targetNet * 2 // Upper bound estimate (NET is typically 60-90% of Gross)
+  const tolerance = 1000 // 1,000 VND tolerance
+
+  // Expand upper bound if needed
+  const testInput: TaxInput = {
+    grossSalary: high,
+    dependents,
+    region,
+    insuranceType,
+    customInsurance,
+  }
+  let testResult = calculateTax(testInput, isNewLaw)
+  while (testResult.netSalary < targetNet && high < targetNet * 5) {
+    high *= 1.5
+    testInput.grossSalary = high
+    testResult = calculateTax(testInput, isNewLaw)
+  }
+
+  // Binary search
+  let iterations = 0
+  const maxIterations = 100
+
+  while (high - low > tolerance && iterations < maxIterations) {
+    const mid = Math.floor((low + high) / 2)
+    testInput.grossSalary = mid
+    const result = calculateTax(testInput, isNewLaw)
+
+    if (result.netSalary < targetNet) {
+      low = mid
+    } else {
+      high = mid
+    }
+    iterations++
+  }
+
+  return Math.round((low + high) / 2)
+}
+
 // Export constants for display
 export const TAX_CONFIG = {
   OLD_PERSONAL_DEDUCTION,

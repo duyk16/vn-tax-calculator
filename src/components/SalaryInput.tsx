@@ -4,15 +4,19 @@ import { useState, useEffect } from 'react';
 import { Minus, Plus } from 'lucide-react';
 import { formatCurrency } from '@/lib/taxCalculator';
 
+export type SalaryMode = 'gross' | 'net';
+
 interface SalaryInputProps {
   value: number;
   onChange: (value: number) => void;
+  mode: SalaryMode;
+  onModeChange: (mode: SalaryMode) => void;
 }
 
 const QUICK_VALUES = [15000000, 30000000, 50000000, 80000000];
 const STEP = 500000;
 
-export function SalaryInput({ value, onChange }: SalaryInputProps) {
+export function SalaryInput({ value, onChange, mode, onModeChange }: SalaryInputProps) {
   const [displayValue, setDisplayValue] = useState(value.toString());
   const [isFocused, setIsFocused] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
@@ -57,8 +61,32 @@ export function SalaryInput({ value, onChange }: SalaryInputProps) {
 
   return (
     <div className="space-y-3">
+      {/* Gross/NET Toggle */}
+      <div className="flex justify-center">
+        <div className="inline-flex rounded-lg bg-secondary p-1">
+          <button
+            onClick={() => onModeChange('gross')}
+            className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all duration-200 ${mode === 'gross'
+                ? 'bg-primary text-primary-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
+              }`}
+          >
+            Gross
+          </button>
+          <button
+            onClick={() => onModeChange('net')}
+            className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all duration-200 ${mode === 'net'
+                ? 'bg-primary text-primary-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
+              }`}
+          >
+            NET
+          </button>
+        </div>
+      </div>
+
       <label className="text-sm font-medium text-muted-foreground block text-center">
-        Nhập thu nhập hàng tháng
+        {mode === 'gross' ? 'Nhập lương Gross' : 'Nhập lương NET mong muốn'}
       </label>
 
       <div className="flex items-center justify-center gap-3">

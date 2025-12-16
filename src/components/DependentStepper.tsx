@@ -1,6 +1,7 @@
 "use client"
 
 import { Minus, Plus, Users } from 'lucide-react';
+import { InfoTooltip } from './InfoTooltip';
 
 interface DependentStepperProps {
   value: number;
@@ -26,7 +27,10 @@ export function DependentStepper({ value, onChange }: DependentStepperProps) {
             <Users className="h-5 w-5 text-primary" />
           </div>
           <div>
-            <p className="font-medium text-foreground text-sm">Người phụ thuộc</p>
+            <p className="font-medium text-foreground text-sm flex items-center gap-1">
+              Người phụ thuộc
+              <InfoTooltip content="Người phụ thuộc là con dưới 18 tuổi, con đang học (dưới 25 tuổi), cha mẹ không có thu nhập. Mỗi người được giảm trừ 4.4tr (cũ) hoặc 6.2tr (mới)/tháng." />
+            </p>
             <p className="text-xs text-muted-foreground">Giảm trừ gia cảnh</p>
           </div>
         </div>
