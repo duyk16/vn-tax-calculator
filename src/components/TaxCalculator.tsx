@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
+import { Analytics } from '@/lib/analytics';
 import Link from 'next/link';
 import { Header } from './Header';
 import { SalaryInput, SalaryMode } from './SalaryInput';
@@ -27,6 +28,15 @@ export function TaxCalculator({ appVersion }: TaxCalculatorProps) {
 
   const [isYearly, setIsYearly] = useState(false);
 
+  // Debounce ref for salary tracking
+  const trackingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Handle yearly toggle with tracking
+  const handleYearlyToggle = (value: boolean) => {
+    setIsYearly(value);
+    Analytics.trackYearlyToggle(value);
+  };
+
   // Calculate the gross salary to use for tax calculation
   const grossSalary = useMemo(() => {
     if (salaryMode === 'gross') {
@@ -43,6 +53,23 @@ export function TaxCalculator({ appVersion }: TaxCalculatorProps) {
     );
   }, [salaryValue, salaryMode, dependents, region, insuranceType, customInsurance]);
 
+  // Track salary calculation with debounce (wait for user to stop typing)
+  useEffect(() => {
+    if (trackingTimeoutRef.current) {
+      clearTimeout(trackingTimeoutRef.current);
+    }
+
+    trackingTimeoutRef.current = setTimeout(() => {
+      Analytics.trackSalaryCalculation(grossSalary, salaryMode);
+    }, 1500); // Wait 1.5 seconds after last change
+
+    return () => {
+      if (trackingTimeoutRef.current) {
+        clearTimeout(trackingTimeoutRef.current);
+      }
+    };
+  }, [grossSalary, salaryMode]);
+
   const input: TaxInput = useMemo(() => ({
     grossSalary,
     dependents,
@@ -50,6 +77,7 @@ export function TaxCalculator({ appVersion }: TaxCalculatorProps) {
     insuranceType,
     customInsurance,
   }), [grossSalary, dependents, region, insuranceType, customInsurance]);
+
 
   const result = useMemo(() => calculateComparison(input), [input]);
 
@@ -96,7 +124,7 @@ export function TaxCalculator({ appVersion }: TaxCalculatorProps) {
             monthlySavings={result.savings}
             savingsPercentage={result.savingsPercentage}
             isYearly={isYearly}
-            onToggleYearly={setIsYearly}
+            onToggleYearly={handleYearlyToggle}
           />
 
           {/* Comparison Chart */}

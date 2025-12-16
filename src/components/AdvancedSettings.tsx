@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/accordion';
 import { formatCurrency, TAX_CONFIG } from '@/lib/taxCalculator';
 import { InfoTooltip } from './InfoTooltip';
+import { Analytics } from '@/lib/analytics';
 
 interface AdvancedSettingsProps {
   region: 1 | 2 | 3 | 4;
@@ -94,6 +95,7 @@ export function AdvancedSettings({
   const handleProvinceSelect = (province: typeof ALL_PROVINCES[0]) => {
     onRegionChange(province.region as 1 | 2 | 3 | 4);
     setSearchQuery('');
+    Analytics.trackRegionChange(province.region as 1 | 2 | 3 | 4);
   };
 
   const handleInsuranceDecrement = () => {
@@ -157,7 +159,10 @@ export function AdvancedSettings({
                 <button
                   key={r.value}
                   id={r.value === 1 ? 'region' : undefined}
-                  onClick={() => onRegionChange(r.value)}
+                  onClick={() => {
+                    onRegionChange(r.value);
+                    Analytics.trackRegionChange(r.value);
+                  }}
                   className={`p-2.5 rounded-lg text-left transition-all duration-200 ${region === r.value
                     ? 'bg-primary text-primary-foreground'
                     : 'bg-secondary text-secondary-foreground hover:bg-accent'
@@ -181,7 +186,10 @@ export function AdvancedSettings({
               {INSURANCE_TYPES.map((type) => (
                 <button
                   key={type.value}
-                  onClick={() => onInsuranceChange(type.value)}
+                  onClick={() => {
+                    onInsuranceChange(type.value);
+                    Analytics.trackInsuranceTypeChange(type.value);
+                  }}
                   className={`w-full p-2.5 rounded-lg text-left transition-all duration-200 flex items-center justify-between ${insuranceType === type.value
                     ? 'bg-primary text-primary-foreground'
                     : 'bg-secondary text-secondary-foreground hover:bg-accent'

@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/drawer';
 import { Button } from '@/components/ui/button';
 import { formatCurrency, TaxBracketBreakdown, TAX_CONFIG } from '@/lib/taxCalculator';
+import { Analytics } from '@/lib/analytics';
 
 interface TaxBreakdownModalProps {
   taxableIncome: number;
@@ -40,6 +41,14 @@ export function TaxBreakdownModal({
     window.addEventListener('resize', checkIsDesktop);
     return () => window.removeEventListener('resize', checkIsDesktop);
   }, []);
+
+  // Handle open state change and track analytics
+  const handleOpenChange = (newOpen: boolean) => {
+    setOpen(newOpen);
+    if (newOpen) {
+      Analytics.trackTaxBreakdownView(isNewLaw);
+    }
+  };
 
   // Get the current tax bracket (highest reached)
   const currentBracket = bracketBreakdown.find(b => b.isHighest);
@@ -92,7 +101,7 @@ export function TaxBreakdownModal({
   return (
     <Drawer
       open={open}
-      onOpenChange={setOpen}
+      onOpenChange={handleOpenChange}
       direction={isDesktop ? 'right' : 'bottom'}
     >
       <DrawerTrigger asChild>
@@ -129,20 +138,20 @@ export function TaxBreakdownModal({
               <div
                 key={bracket.bracket}
                 className={`rounded-lg p-3 border transition-colors ${bracket.isCurrent
-                    ? 'border-primary bg-primary/5 ring-1 ring-primary/20'
-                    : bracket.isActive
-                      ? 'border-border bg-muted/30'
-                      : 'border-border/50 bg-muted/10 opacity-50'
+                  ? 'border-primary bg-primary/5 ring-1 ring-primary/20'
+                  : bracket.isActive
+                    ? 'border-border bg-muted/30'
+                    : 'border-border/50 bg-muted/10 opacity-50'
                   }`}
               >
                 {/* Bracket Header */}
                 <div className="flex justify-between items-center mb-1">
                   <div className="flex items-center gap-2">
                     <span className={`text-sm font-medium ${bracket.isCurrent
-                        ? 'text-primary'
-                        : bracket.isActive
-                          ? 'text-foreground'
-                          : 'text-muted-foreground'
+                      ? 'text-primary'
+                      : bracket.isActive
+                        ? 'text-foreground'
+                        : 'text-muted-foreground'
                       }`}>
                       {bracket.label}: {Math.round(bracket.rate * 100)}%
                     </span>
@@ -153,10 +162,10 @@ export function TaxBreakdownModal({
                     )}
                   </div>
                   <span className={`text-sm font-semibold ${bracket.isCurrent
-                      ? 'text-primary'
-                      : bracket.isActive
-                        ? 'text-foreground'
-                        : 'text-muted-foreground'
+                    ? 'text-primary'
+                    : bracket.isActive
+                      ? 'text-foreground'
+                      : 'text-muted-foreground'
                     }`}>
                     {formatCurrency(bracket.taxAmount * multiplier)} đ
                   </span>

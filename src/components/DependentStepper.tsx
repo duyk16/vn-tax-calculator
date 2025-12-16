@@ -1,7 +1,9 @@
 "use client"
 
+import { useEffect, useRef } from 'react';
 import { Minus, Plus, Users } from 'lucide-react';
 import { InfoTooltip } from './InfoTooltip';
+import { Analytics } from '@/lib/analytics';
 
 interface DependentStepperProps {
   value: number;
@@ -9,6 +11,25 @@ interface DependentStepperProps {
 }
 
 export function DependentStepper({ value, onChange }: DependentStepperProps) {
+  const trackingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Track dependent changes with debounce
+  useEffect(() => {
+    if (trackingTimeoutRef.current) {
+      clearTimeout(trackingTimeoutRef.current);
+    }
+
+    trackingTimeoutRef.current = setTimeout(() => {
+      Analytics.trackDependentsChange(value);
+    }, 1000);
+
+    return () => {
+      if (trackingTimeoutRef.current) {
+        clearTimeout(trackingTimeoutRef.current);
+      }
+    };
+  }, [value]);
+
   const handleDecrement = () => {
     if (value > 0) {
       onChange(value - 1);

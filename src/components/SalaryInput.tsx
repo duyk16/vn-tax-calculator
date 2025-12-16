@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Minus, Plus } from 'lucide-react';
 import { formatCurrency } from '@/lib/taxCalculator';
+import { Analytics } from '@/lib/analytics';
 
 export type SalaryMode = 'gross' | 'net';
 
@@ -65,19 +66,25 @@ export function SalaryInput({ value, onChange, mode, onModeChange }: SalaryInput
       <div className="flex justify-center">
         <div className="inline-flex rounded-lg bg-secondary p-1">
           <button
-            onClick={() => onModeChange('gross')}
+            onClick={() => {
+              onModeChange('gross');
+              Analytics.trackSalaryModeToggle('gross');
+            }}
             className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all duration-200 ${mode === 'gross'
-                ? 'bg-primary text-primary-foreground shadow-sm'
-                : 'text-muted-foreground hover:text-foreground'
+              ? 'bg-primary text-primary-foreground shadow-sm'
+              : 'text-muted-foreground hover:text-foreground'
               }`}
           >
             Gross
           </button>
           <button
-            onClick={() => onModeChange('net')}
+            onClick={() => {
+              onModeChange('net');
+              Analytics.trackSalaryModeToggle('net');
+            }}
             className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all duration-200 ${mode === 'net'
-                ? 'bg-primary text-primary-foreground shadow-sm'
-                : 'text-muted-foreground hover:text-foreground'
+              ? 'bg-primary text-primary-foreground shadow-sm'
+              : 'text-muted-foreground hover:text-foreground'
               }`}
           >
             NET
@@ -129,7 +136,10 @@ export function SalaryInput({ value, onChange, mode, onModeChange }: SalaryInput
         {QUICK_VALUES.map((quickValue) => (
           <button
             key={quickValue}
-            onClick={() => onChange(quickValue)}
+            onClick={() => {
+              onChange(quickValue);
+              Analytics.trackQuickValueSelect(quickValue);
+            }}
             className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${value === quickValue
               ? 'bg-primary text-primary-foreground'
               : 'bg-secondary text-secondary-foreground hover:bg-accent'
