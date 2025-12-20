@@ -15,10 +15,10 @@ import { Analytics } from '@/lib/analytics';
 interface AdvancedSettingsProps {
   region: 1 | 2 | 3 | 4;
   insuranceType: 'official' | 'none' | 'custom';
-  customInsurance: number;
+  customInsuranceSalary: number;
   onRegionChange: (value: 1 | 2 | 3 | 4) => void;
   onInsuranceChange: (value: 'official' | 'none' | 'custom') => void;
-  onCustomInsuranceChange: (value: number) => void;
+  onCustomInsuranceSalaryChange: (value: number) => void;
 }
 
 const REGIONS = [
@@ -70,19 +70,19 @@ const ALL_PROVINCES = [
 const INSURANCE_TYPES = [
   { value: 'official' as const, label: 'Theo lương chính thức', description: 'Đóng BH theo lương Gross' },
   { value: 'none' as const, label: 'Không đóng', description: 'Không tham gia BH' },
-  { value: 'custom' as const, label: 'Tuỳ chỉnh', description: 'Nhập số tiền đóng BH' },
+  { value: 'custom' as const, label: 'Tuỳ chỉnh', description: 'Nhập mức lương đóng BH' },
 ];
 
-const INSURANCE_QUICK_VALUES = [5000000, 7000000, 10000000, 20000000];
-const INSURANCE_STEP = 500000;
+const INSURANCE_SALARY_QUICK_VALUES = [5000000, 10000000, 20000000, 46800000];
+const INSURANCE_STEP = 1000000;
 
 export function AdvancedSettings({
   region,
   insuranceType,
-  customInsurance,
+  customInsuranceSalary,
   onRegionChange,
   onInsuranceChange,
-  onCustomInsuranceChange,
+  onCustomInsuranceSalaryChange,
 }: AdvancedSettingsProps) {
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -99,13 +99,17 @@ export function AdvancedSettings({
   };
 
   const handleInsuranceDecrement = () => {
-    const newValue = Math.max(0, customInsurance - INSURANCE_STEP);
-    onCustomInsuranceChange(newValue);
+    const newValue = Math.max(0, customInsuranceSalary - INSURANCE_STEP);
+    onCustomInsuranceSalaryChange(newValue);
   };
 
   const handleInsuranceIncrement = () => {
-    onCustomInsuranceChange(customInsurance + INSURANCE_STEP);
+    onCustomInsuranceSalaryChange(customInsuranceSalary + INSURANCE_STEP);
   };
+
+  // Check if salary is below regional minimum
+  const minSalary = TAX_CONFIG.REGIONAL_MIN_SALARY[region];
+  const isBelowMinimum = customInsuranceSalary < minSalary;
 
   return (
     <Accordion type="single" collapsible className="w-full">
@@ -216,11 +220,20 @@ export function AdvancedSettings({
             {/* Custom Insurance Input */}
             {insuranceType === 'custom' && (
               <div className="mt-3 p-3 bg-secondary/50 rounded-lg space-y-3">
+                {/* Warning for below minimum salary */}
+                {isBelowMinimum && (
+                  <div className="p-2 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+                    <p className="text-xs text-yellow-600 dark:text-yellow-400">
+                      ⚠️ Mức lương thấp hơn quy định tối thiểu vùng {region} ({formatCurrency(minSalary)} ₫)
+                    </p>
+                  </div>
+                )}
+
                 <div className="flex items-center justify-center gap-3">
                   <button
                     onClick={handleInsuranceDecrement}
                     className="w-9 h-9 rounded-full bg-background flex items-center justify-center hover:bg-accent transition-colors active:scale-95"
-                    aria-label="Giảm 500.000đ"
+                    aria-label="Giảm 1.000.000đ"
                   >
                     <Minus className="h-4 w-4 text-foreground" />
                   </button>
@@ -229,36 +242,36 @@ export function AdvancedSettings({
                     <input
                       id="insuranceBaseSalary"
                       type="text"
-                      value={formatCurrency(customInsurance)}
+                      value={formatCurrency(customInsuranceSalary)}
                       onChange={(e) => {
                         const rawValue = e.target.value.replace(/[^\d]/g, '');
-                        onCustomInsuranceChange(parseInt(rawValue) || 0);
+                        onCustomInsuranceSalaryChange(parseInt(rawValue) || 0);
                       }}
-                      className="text-lg font-bold text-foreground bg-transparent border-none outline-none text-center w-32"
+                      className="text-lg font-bold text-foreground bg-transparent border-none outline-none text-center w-36"
                     />
-                    <p className="text-xs text-muted-foreground">Tổng BH/tháng</p>
+                    <p className="text-xs text-muted-foreground">Mức lương đóng BH</p>
                   </div>
 
                   <button
                     onClick={handleInsuranceIncrement}
                     className="w-9 h-9 rounded-full bg-background flex items-center justify-center hover:bg-accent transition-colors active:scale-95"
-                    aria-label="Tăng 500.000đ"
+                    aria-label="Tăng 1.000.000đ"
                   >
                     <Plus className="h-4 w-4 text-foreground" />
                   </button>
                 </div>
 
                 <div className="flex flex-wrap justify-center gap-1.5">
-                  {INSURANCE_QUICK_VALUES.map((quickValue) => (
+                  {INSURANCE_SALARY_QUICK_VALUES.map((quickValue: number) => (
                     <button
                       key={quickValue}
-                      onClick={() => onCustomInsuranceChange(quickValue)}
-                      className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all duration-200 ${customInsurance === quickValue
+                      onClick={() => onCustomInsuranceSalaryChange(quickValue)}
+                      className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all duration-200 ${customInsuranceSalary === quickValue
                         ? 'bg-primary text-primary-foreground'
                         : 'bg-background text-secondary-foreground hover:bg-accent'
                         }`}
                     >
-                      {quickValue / 1000000} tr
+                      {quickValue >= 1000000 ? `${quickValue / 1000000}tr` : formatCurrency(quickValue)}
                     </button>
                   ))}
                 </div>

@@ -24,7 +24,7 @@ export function TaxCalculator({ appVersion }: TaxCalculatorProps) {
   const [dependents, setDependents] = useState(2);
   const [region, setRegion] = useState<1 | 2 | 3 | 4>(1);
   const [insuranceType, setInsuranceType] = useState<'official' | 'none' | 'custom'>('official');
-  const [customInsurance, setCustomInsurance] = useState(5000000);
+  const [customInsuranceSalary, setCustomInsuranceSalary] = useState(10000000);
 
   const [isYearly, setIsYearly] = useState(false);
 
@@ -48,10 +48,10 @@ export function TaxCalculator({ appVersion }: TaxCalculatorProps) {
       dependents,
       region,
       insuranceType,
-      customInsurance,
+      customInsuranceSalary,
       true // Use new law for calculation
     );
-  }, [salaryValue, salaryMode, dependents, region, insuranceType, customInsurance]);
+  }, [salaryValue, salaryMode, dependents, region, insuranceType, customInsuranceSalary]);
 
   // Track salary calculation with debounce (wait for user to stop typing)
   useEffect(() => {
@@ -75,8 +75,8 @@ export function TaxCalculator({ appVersion }: TaxCalculatorProps) {
     dependents,
     region,
     insuranceType,
-    customInsurance,
-  }), [grossSalary, dependents, region, insuranceType, customInsurance]);
+    customInsuranceSalary,
+  }), [grossSalary, dependents, region, insuranceType, customInsuranceSalary]);
 
 
   const result = useMemo(() => calculateComparison(input), [input]);
@@ -109,10 +109,10 @@ export function TaxCalculator({ appVersion }: TaxCalculatorProps) {
           <AdvancedSettings
             region={region}
             insuranceType={insuranceType}
-            customInsurance={customInsurance}
+            customInsuranceSalary={customInsuranceSalary}
             onRegionChange={setRegion}
             onInsuranceChange={setInsuranceType}
-            onCustomInsuranceChange={setCustomInsurance}
+            onCustomInsuranceSalaryChange={setCustomInsuranceSalary}
           />
         </div>
 

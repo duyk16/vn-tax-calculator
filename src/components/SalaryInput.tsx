@@ -15,7 +15,7 @@ interface SalaryInputProps {
 }
 
 const QUICK_VALUES = [15000000, 30000000, 50000000, 80000000];
-const STEP = 500000;
+const STEP = 1000000;
 
 export function SalaryInput({ value, onChange, mode, onModeChange }: SalaryInputProps) {
   const [displayValue, setDisplayValue] = useState(value.toString());

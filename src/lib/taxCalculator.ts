@@ -7,7 +7,7 @@ export interface TaxInput {
   dependents: number
   region: 1 | 2 | 3 | 4
   insuranceType: "official" | "none" | "custom"
-  customInsurance?: number
+  customInsuranceSalary?: number // Mức lương đóng BH (không phải tổng tiền BH)
 }
 
 export interface TaxBracketBreakdown {
@@ -54,6 +54,14 @@ const REGIONAL_BHTN_CEILING: Record<number, number> = {
   4: 69000000, // Vùng IV: 20 × 3,450,000
 }
 
+// Minimum salary for insurance contribution (as of 01/7/2024)
+const REGIONAL_MIN_SALARY: Record<number, number> = {
+  1: 4960000, // Vùng I
+  2: 4410000, // Vùng II
+  3: 3860000, // Vùng III
+  4: 3450000, // Vùng IV
+}
+
 // Insurance rates (employee contribution)
 const INSURANCE_RATES = {
   social: 0.08, // 8%
@@ -89,7 +97,7 @@ function calculateInsurance(
   grossSalary: number,
   region: number,
   insuranceType: "official" | "none" | "custom",
-  customInsurance?: number
+  customInsuranceSalary?: number
 ): {
   social: number
   health: number
@@ -100,13 +108,19 @@ function calculateInsurance(
     return { social: 0, health: 0, unemployment: 0, total: 0 }
   }
 
-  if (insuranceType === "custom" && customInsurance !== undefined) {
-    // Custom insurance - distribute proportionally
-    const totalRate = INSURANCE_RATES.social + INSURANCE_RATES.health + INSURANCE_RATES.unemployment
-    const social = (INSURANCE_RATES.social / totalRate) * customInsurance
-    const health = (INSURANCE_RATES.health / totalRate) * customInsurance
-    const unemployment = (INSURANCE_RATES.unemployment / totalRate) * customInsurance
-    return { social, health, unemployment, total: customInsurance }
+  if (insuranceType === "custom" && customInsuranceSalary !== undefined) {
+    // Custom insurance - calculate based on salary with proper caps
+    // BHXH and BHYT are capped at BHXH_BHYT_CEILING
+    const cappedBHXH_BHYT = Math.min(customInsuranceSalary, BHXH_BHYT_CEILING)
+    const social = cappedBHXH_BHYT * INSURANCE_RATES.social
+    const health = cappedBHXH_BHYT * INSURANCE_RATES.health
+
+    // BHTN is capped at regional ceiling
+    const bhtnCeiling = REGIONAL_BHTN_CEILING[region] || REGIONAL_BHTN_CEILING[1]
+    const cappedBHTN = Math.min(customInsuranceSalary, bhtnCeiling)
+    const unemployment = cappedBHTN * INSURANCE_RATES.unemployment
+
+    return { social, health, unemployment, total: social + health + unemployment }
   }
 
   // Official - calculate based on gross salary with caps
@@ -178,7 +192,12 @@ function calculateProgressiveTax(
 }
 
 function calculateTax(input: TaxInput, isNewLaw: boolean): TaxResult {
-  const insurance = calculateInsurance(input.grossSalary, input.region, input.insuranceType, input.customInsurance)
+  const insurance = calculateInsurance(
+    input.grossSalary,
+    input.region,
+    input.insuranceType,
+    input.customInsuranceSalary
+  )
 
   const personalDeduction = isNewLaw ? NEW_PERSONAL_DEDUCTION : OLD_PERSONAL_DEDUCTION
   const dependentDeduction = (isNewLaw ? NEW_DEPENDENT_DEDUCTION : OLD_DEPENDENT_DEDUCTION) * input.dependents
@@ -245,7 +264,7 @@ export function calculateGrossFromNet(
   dependents: number,
   region: 1 | 2 | 3 | 4,
   insuranceType: "official" | "none" | "custom",
-  customInsurance?: number,
+  customInsuranceSalary?: number,
   isNewLaw: boolean = true
 ): number {
   // Binary search bounds
@@ -259,7 +278,7 @@ export function calculateGrossFromNet(
     dependents,
     region,
     insuranceType,
-    customInsurance,
+    customInsuranceSalary,
   }
   let testResult = calculateTax(testInput, isNewLaw)
   while (testResult.netSalary < targetNet && high < targetNet * 5) {
@@ -298,4 +317,5 @@ export const TAX_CONFIG = {
   NEW_TAX_BRACKETS,
   BHXH_BHYT_CEILING,
   REGIONAL_BHTN_CEILING,
+  REGIONAL_MIN_SALARY,
 }
